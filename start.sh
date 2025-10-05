@@ -18,7 +18,7 @@ fi
 if [[ $1 == "nginx" || $1 == "all" ]];
 then
     ### Create configmap for nginx
-    kubectl create configmap nginx-conf --from-file=deploy/web/nginx.conf
+    kubectl create -f deploy/web/nginx-conf-configmap.yaml
     kubectl create -f deploy/web/server-conf-configmap.yaml
     
     # nginx
@@ -28,14 +28,6 @@ fi;
 
 ### Create deployments and services
 
-# if [[ $1 == "otel" || $1 == "all" ]];
-# then
-# # opentelemtry collector
-# kubectl create -f deploy/otelcol/config_map.yaml
-# kubectl create -f deploy/otelcol/deployment.yaml
-# kubectl create -f deploy/otelcol/service_account.yaml
-# kubectl create -f deploy/otelcol/service.yaml
-# fi
 
 if [[ $1 == "db" || $1 == "all" ]];
 then
