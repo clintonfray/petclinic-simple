@@ -8,12 +8,8 @@ metadata:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
 spec:
   ingressClassName: "nginx"
-  tls:
-    - hosts:
-        - petclinic.cfdev.co.za	
-      secretName: petclinic-tls
   rules:
-    - host: petclinic.cfdev.co.za	
+    - host: petclinic.app.aws.cfdev.co.za	
       http:
         paths:
           - path: /
@@ -23,3 +19,7 @@ spec:
                 name: nginx-service
                 port:
                   number: 80
+  # tls:
+  #   - hosts:
+  #       - petclinic.app.aws.cfdev.co.za	
+  #     secretName: petclinic-tls
