@@ -6,9 +6,12 @@ metadata:
   name: petclinic-ingress
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   ingressClassName: "nginx"
+  tls:
+    - hosts:
+        - petclinic.app.aws.cfdev.co.za	
+      secretName: petclinic-tls
   rules:
     - host: petclinic.app.aws.cfdev.co.za	
       http:
@@ -20,7 +23,4 @@ spec:
                 name: nginx-service
                 port:
                   number: 80
-  # tls:
-  #   - hosts:
-  #       - petclinic.app.aws.cfdev.co.za	
-  #     secretName: petclinic-tls
+  
