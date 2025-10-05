@@ -1,61 +1,81 @@
 #!/bin/bash
 
-echo "Creating Spring Boot demo application for Kubernetes on local environment"
 
+# Function to check if namespace exists
+function namespace_exists() {
+  kubectl get namespace "$1" &> /dev/null
+  return $?
+}
+
+# Prompt user until a valid namespace is given
+while true; do
+  read -rp "Enter Kubernetes namespace: " NAMESPACE
+  if namespace_exists "$NAMESPACE"; then
+    echo "✅ Namespace '$NAMESPACE' exists. Proceeding..."
+    break
+  else
+    echo "❌ Namespace '$NAMESPACE' does not exist. Please create the namespace and try again."
+    echo "----------EXAMPLE COMMAND: kubectl create namespace $NAMESPACE"
+    exit 0
+  fi
+done
+
+echo "Creating Spring Boot demo application for Kubernetes on local environment"
 
 if [[ -z $1 ]];
 then
-echo "Please specify one of the following:";
+# echo "Please specify one of the following:";
+
 echo "nginx";
 echo "app";
 echo "db";
 echo "ingress";
 echo "load";
 echo "all";
+read -rp "Please specify one of the following: " DEPLOYMENT;
 fi
 
+echo "🔧 Performing operations for '$DEPLOYMENT' service(s) in namespace '$NAMESPACE'..."
 
-if [[ $1 == "nginx" || $1 == "all" ]];
+if [[ $DEPLOYMENT == "nginx" || $DEPLOYMENT == "all" ]];
 then
     ### Create configmap for nginx
-    kubectl create -f deploy/web/nginx-conf-configmap.yaml
-    kubectl create -f deploy/web/server-conf-configmap.yaml
+    kubectl create -f deploy/web/nginx-conf-configmap.yaml -n "$NAMESPACE"
+    kubectl create -f deploy/web/server-conf-configmap.yaml -n "$NAMESPACE"
     
     # nginx
-    kubectl create -f deploy/web/deployment.yaml
-    kubectl create -f deploy/web/service.yaml
+    kubectl create -f deploy/web/deployment.yaml -n "$NAMESPACE"
+    kubectl create -f deploy/web/service.yaml -n "$NAMESPACE"
 fi;
 
 ### Create deployments and services
 
 
-if [[ $1 == "db" || $1 == "all" ]];
+if [[ $DEPLOYMENT == "db" || $DEPLOYMENT == "all" ]];
 then
 # db
-kubectl create -f deploy/db/statefulset.yaml
-kubectl create -f deploy/db/service.yaml
+kubectl create -f deploy/db/statefulset.yaml -n "$NAMESPACE"
+kubectl create -f deploy/db/service.yaml -n "$NAMESPACE"
 fi
 
-if [[ $1 == "app" || $1 == "all" ]];
+if [[ $DEPLOYMENT == "app" || $DEPLOYMENT == "all" ]];
 then
 # app (For Local environment)
-# kubectl create -f deploy/app/pv.yaml
-# kubectl create -f deploy/app/pvc.yaml
-kubectl create -f deploy/app/deployment.yaml
-kubectl create -f deploy/app/service.yaml
+kubectl create -f deploy/app/deployment.yaml -n "$NAMESPACE"
+kubectl create -f deploy/app/service.yaml -n "$NAMESPACE"
 fi
 
 
-if [[ $1 == "ingress" || $1 == "all" ]];
+if [[ $DEPLOYMENT == "ingress" || $DEPLOYMENT == "all" ]];
 then
 # ingress
-kubectl create -f deploy/lb/ingress.yaml
+kubectl create -f deploy/lb/ingress.yaml -n "$NAMESPACE"
 fi
 
-if [[ $1 == "load" || $1 == "all" ]];
+if [[ $DEPLOYMENT == "load" || $DEPLOYMENT == "all" ]];
 then
 # load
-kubectl create configmap locustfile --from-file=deploy/load/locustfile.py
-kubectl create -f deploy/load/load.yaml
+kubectl create configmap locustfile --from-file=deploy/load/locustfile.py -n "$NAMESPACE"
+kubectl create -f deploy/load/load.yaml -n "$NAMESPACE"
 fi;
 
