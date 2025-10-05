@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-server
+  template:
+    metadata:
+      labels:
+        app: app-server
+    spec:
+      containers:
+        - name: app-server
+          image: clfray/spring-petclinic-app:24.08.15
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "mysql"
+            - name: MYSQL_URL
+              value: "jdbc:mysql://mysql-service:3306/petclinic"
+            - name: MYSQL_USER
+              value: petclinic
+            - name: MYSQL_PASS
+              value: petclinic
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "100Mi"
+            limits:
+              cpu: "400m"
+              memory: "400Mi"

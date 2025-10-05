@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-server
+  template:
+    metadata:
+      labels:
+        app: nginx-server
+    spec:
+      containers:
+        - name: nginx
+          image: clfray/spring-petclinic-nginx:24.08.15
+          ports:
+            - containerPort: 80
+          # readinessProbe:
+          #   httpGet:
+          #     path: /css/style.css
+          #     port: 80
+          volumeMounts:
+            - name: nginx-conf
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+            - name: server-conf
+              mountPath: /etc/nginx/conf.d/server.conf
+              subPath: server.conf
+      volumes:
+        - name: nginx-conf
+          configMap:
+            name: nginx-conf
+            items:
+              - key: nginx.conf
+                path: nginx.conf
+        - name: server-conf
+          configMap:
+            name: server-conf
+            items:
+              - key: server.conf
+                path: server.conf

@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql-sfs
+spec:
+  serviceName: mysql-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-sfs
+  template:
+    metadata:
+      labels:
+        app: mysql-sfs
+    spec:
+      containers:
+        - name: mysql
+          image: clfray/spring-petclinic-db:24.08.15
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: root
+            - name: MYSQL_DATABASE
+              value: petclinic
+            - name: MYSQL_USER
+              value: petclinic
+            - name: MYSQL_PASSWORD
+              value: petclinic
+          ports:
+            - containerPort: 5432

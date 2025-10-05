@@ -1,0 +1,24 @@
+USER-SUPPLIED VALUES:
+agent:
+  discovery:
+    enabled: true
+clusterName: clfray-k8s-cluster
+environment: dev
+gateway:
+  enabled: false
+operator:
+  enabled: true
+operatorcrds:
+  install: true
+splunkObservability:
+  accessToken: BKnN6otvbR3-MnSJ7O-v4A
+  profilingEnabled: true
+  realm: us1
+splunkPlatform:
+  endpoint: https://splunkhec.cfdev.co.za/services/collector/event
+  index: clfray-main
+  logsEnabled: true
+  metricsEnabled: false
+  source: kubernetes
+  token: 89058486-2c5d-4d1d-bb0a-1608eddcef04
+  tracesEnabled: false

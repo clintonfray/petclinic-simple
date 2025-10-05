@@ -1,0 +1,61 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: server-conf
+data:
+  server.conf: |
+    server {
+      server_name  _;
+      listen 80;
+
+       location /nginx_status {
+        stub_status on;
+        # Optionally restrict access to IP addresses if needed
+        allow 127.0.0.1;
+        deny all;
+      }
+
+      # location ~* \.(js|jpg|png|css)$ {
+      #     expires 168h;
+      #     root   /usr/share/nginx/html;
+      # }
+
+      location / {
+
+          sub_filter      </head>
+               '
+                 <script charset="UTF-8">
+                  window["adrum-start-time"] = new Date().getTime();
+                  (function(config){
+                      config.appKey = "EUM-AAB-AUB";
+                      config.adrumExtUrlHttp = "http://cdn.appdynamics.com";
+                      config.adrumExtUrlHttps = "https://cdn.appdynamics.com";
+                      config.beaconUrlHttp = "http://appd.cfdev.co.za";
+                      config.beaconUrlHttps = "https://appd.cfdev.co.za";
+                      config.xd = {enable : true};
+                  })(window["adrum-config"] || (window["adrum-config"] = {}));
+                  </script>
+                  <script src="//cdn.appdynamics.com/adrum/adrum-24.4.0.4454.js"></script>
+      
+             </head>';
+
+          
+          sub_filter_once on;
+
+
+
+          proxy_set_header X-Forwarded-Host $host;
+          proxy_set_header X-Forwarded-Server $host;
+          proxy_set_header X-Forwarded-For $remote_addr;
+          proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header Host $http_host;
+          proxy_pass http://app-service:8080;
+          proxy_cookie_path / /;
+      }
+
+      error_page   500 502 503 504  /50x.html;
+      location = /50x.html {
+          root   /usr/share/nginx/html;
+      }
+    }
